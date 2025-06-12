@@ -1,0 +1,69 @@
+﻿@model CDTN.Models.DiscountCode
+
+@{
+    ViewBag.Title = "Chỉnh sửa mã giảm giá";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h3 class="mb-4">✏️ Chỉnh sửa Mã: @Model.Code</h3>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="row">
+        <!-- giống hệt Create.cshtml -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Mã giảm giá:</label>
+                @Html.TextBoxFor(m => m.Code, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Code)
+            </div>
+
+            <div class="form-group">
+                <label>Giá trị giảm:</label>
+                @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.DiscountAmount)
+            </div>
+
+            <div class="form-group">
+                <label>Giảm theo phần trăm?</label>
+                @Html.CheckBoxFor(m => m.IsPercentage)
+            </div>
+
+            <div class="form-group">
+                <label>Loại áp dụng:</label>
+                @Html.EnumDropDownListFor(m => m.Type, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group">
+                <label>Sản phẩm áp dụng (nếu có):</label>
+                @Html.DropDownList("ProductId", (SelectList)ViewBag.ProductId, "-- Không áp dụng sản phẩm --", new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Ngày bắt đầu:</label>
+                @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="form-group">
+                <label>Ngày kết thúc:</label>
+                @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="form-group">
+                <label>Kích hoạt?</label>
+                @Html.CheckBoxFor(m => m.IsActive)
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">💾 Cập nhật</button>
+        @Html.ActionLink("↩️ Quay lại", "Index", null, new { @class = "btn btn-secondary ml-2" })
+    </div>
+}

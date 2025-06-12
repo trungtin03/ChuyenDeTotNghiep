@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "Trung Tâm Trợ Giúp";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">Trung Tâm Trợ Giúp</h2>
+        <p class="text-muted">Chúng tôi luôn sẵn sàng hỗ trợ bạn mọi lúc</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Liên hệ -->
+        <div class="col-md-4">
+            <a href="@Url.Action("Contact", "Support")" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 support-card">
+                    <div class="card-body text-center">
+                        <div class="mb-3 text-primary">
+                            <i class="fa fa-phone fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Liên hệ</h5>
+                        <p class="card-text text-muted">Thông tin hotline, email và gửi phản ánh khiếu nại đến chúng tôi.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Hướng dẫn mua hàng -->
+        <div class="col-md-4">
+            <a href="@Url.Action("BuyGuide", "Support")" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 support-card">
+                    <div class="card-body text-center">
+                        <div class="mb-3 text-success">
+                            <i class="fa fa-shopping-cart fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Hướng dẫn mua hàng</h5>
+                        <p class="card-text text-muted">Cách đặt hàng nhanh chóng, dễ dàng trên website TrueMart.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Hướng dẫn chọn size -->
+        <div class="col-md-4">
+            <a href="@Url.Action("SizeGuide", "Support")" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 support-card">
+                    <div class="card-body text-center">
+                        <div class="mb-3 text-info">
+                            <i class="fa fa-ruler fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Hướng dẫn chọn size</h5>
+                        <p class="card-text text-muted">Bảng size chi tiết cho từng loại sản phẩm và giới tính.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Điều khoản và chính sách -->
+        <div class="col-md-4">
+            <a href="@Url.Action("Policy", "Support")" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 support-card">
+                    <div class="card-body text-center">
+                        <div class="mb-3 text-warning">
+                            <i class="fa fa-file-contract fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Điều khoản & Chính sách</h5>
+                        <p class="card-text text-muted">Quy định về đổi trả, thanh toán, vận chuyển, bảo mật.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Câu hỏi thường gặp -->
+        <div class="col-md-4">
+            <a href="@Url.Action("Faq", "Support")" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 support-card">
+                    <div class="card-body text-center">
+                        <div class="mb-3 text-secondary">
+                            <i class="fa fa-question-circle fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Câu hỏi thường gặp</h5>
+                        <p class="card-text text-muted">Những thắc mắc phổ biến của khách hàng đã được giải đáp sẵn.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .support-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 16px;
+    }
+
+        .support-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+</style>

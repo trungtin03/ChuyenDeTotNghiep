@@ -1,0 +1,359 @@
+﻿@model PagedList.IPagedList<CDTN.Models.SanPham>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    CDTN.Models.TaiKhoanQuanTri tk = (CDTN.Models.TaiKhoanQuanTri)HttpContext.Current.Session[CDTN.Session.ConstaintUser.ADMIN_SESSION];
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+<style>
+    .popup-overlay, #overlay {
+        z-index: 1050;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: none;
+        backdrop-filter: blur(2px);
+    }
+
+    .popup-box {
+        z-index: 1060;
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        width: 80%;
+        max-width: 960px;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .table thead th {
+        background-color: #e0f2fe;
+        color: #0f172a;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f0f9ff;
+    }
+
+    .btn-outline-primary {
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+    }
+
+    .img-thumbnail {
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-group .btn {
+        border-radius: 6px;
+    }
+
+    .page-item.active .page-link {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: #fff;
+    }
+
+    .page-link {
+        color: #3b82f6;
+    }
+
+    .btn-danger.btn-remove {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    .image-clothes img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <h2 class="h4"><i class="fas fa-box-open mr-2"></i>Danh sách sản phẩm</h2>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="addPopup">
+                <i class="fas fa-plus mr-1"></i>Thêm sản phẩm
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form class="row align-items-center">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" name="searchString" value="@ViewBag.searchString" placeholder="Tìm kiếm tên sản phẩm..." />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Tên danh mục</th>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Ngày nhập</th>
+                <th>Người nhập</th>
+                <th>Giá</th>
+                <th>Ngày sửa</th>
+                <th>Người sửa</th>
+                <th class="text-center">Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="row-@item.MaSP">
+                    <td>@item.DanhMuc.TenDanhMuc</td>
+                    <td><div class="image-clothes"><img src="@item.HinhAnh" alt="@item.TenSP"></div></td>
+                    <td><strong>@item.TenSP</strong></td>
+                    <td>@item.NgayTao</td>
+                    <td>@item.NguoiTao</td>
+                    <td><strong>@string.Format(info, "{0:c0}", item.Gia)</strong></td>
+                    <td>@item.NgaySua</td>
+                    <td>@item.NguoiSua</td>
+                    <td class="text-center">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item" onclick="loadData(@item.MaSP)"><i class="fas fa-edit mr-2"></i>Chỉnh sửa</button>
+                                @if (tk.LoaiTaiKhoan)
+                                {
+                                    <button class="dropdown-item text-danger" onclick="deleteData(@item.MaSP)"><i class="fas fa-trash-alt mr-2"></i>Xóa</button>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="card-footer d-flex align-items-center justify-content-between">
+        <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = Model.PageSize, searchString = ViewBag.searchString }))
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<div class="popup-overlay" id="overlay" style="display:none;"></div>
+@section Popup {
+    <div class="popUp popup-box" id="popUp">
+        <div class="col-12 col-lg-8 mx-auto">
+            <div class="card card-body shadow-sm">
+                <h2 class="h5 mb-4">Thêm sản phẩm mới</h2>
+                <form id="add-form" onsubmit="return themSanPham()">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="uploadImage">
+                                <img class="img-fluid img-thumbnail rounded" id="output" src="" alt="Chưa có hình" style="width:100%; height:300px; object-fit:cover;">
+                                <label for="imageFile" class="btn btn-primary btn-block mt-2">Chọn hình ảnh</label>
+                                <input type="file" id="imageFile" onchange="loadFile(event)" hidden>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Tên sản phẩm</label>
+                            <input class="form-control" name="tensp" required>
+                            <label class="mt-2">Danh mục</label>
+                            <select class="form-select" name="madm" required>
+                                @foreach (var item in ViewBag.Category)
+                                {
+                                    <option value="@item.MaDM">@item.TenDanhMuc</option>
+                                }
+                            </select>
+                            <label class="mt-2">Giá sản phẩm</label>
+                            <input type="number" class="form-control" name="gia" min="0" required>
+                            <label class="mt-2">Chất liệu</label>
+                            <input class="form-control" name="chatlieu" required>
+                        </div>
+                    </div>
+
+                    <label class="mt-2">Chọn màu - size - số lượng</label>
+                    <div id="listMauSize_Add"></div>
+                    <button type="button" class="btn btn-outline-primary mt-2" id="btnThemMauSize_Add">+ Thêm màu + size</button>
+
+                    <div class="form-group mt-3">
+                        <label>Mô tả sản phẩm</label>
+                        <textarea class="form-control" name="mota" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hướng dẫn sử dụng</label>
+                        <textarea class="form-control" name="huongdan" rows="4" required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end" style="margin: 10px">
+                        <button class="btn btn-success mr-2" type="submit">Thêm sản phẩm</button>
+                        <button class="btn btn-secondary cancelPopup" type="button" id="cancelPopup">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+@section changePopup {
+    <div class="changePopUp popup-box" id="changePopUp">
+        <div class="col-12 col-lg-8 mx-auto">
+            <div class="card card-body shadow-sm">
+                <h2 class="h5 mb-4">Chỉnh sửa sản phẩm</h2>
+                <form id="update-form" onsubmit="return suaSanPham()">
+                    <input type="hidden" id="masp" name="masp">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="uploadImage">
+                                <img class="img-fluid img-thumbnail rounded" id="anhsp" src="" alt="noImage" style="width:100%; height:300px; object-fit:cover;">
+                                <label for="updateImage" class="btn btn-primary btn-block mt-2">Chọn hình ảnh</label>
+                                <input type="file" id="updateImage" onchange="loadFileUpdate(event)" hidden>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Tên sản phẩm</label>
+                            <input class="form-control" id="tensanpham" name="tensp" required>
+                            <label class="mt-2">Danh mục</label>
+                            <select class="form-select" id="danhmuc" name="madm" required>
+                                @foreach (var item in ViewBag.Category)
+                                {
+                                    <option value="@item.MaDM">@item.TenDanhMuc</option>
+                                }
+                            </select>
+                            <label class="mt-2">Giá sản phẩm</label>
+                            <input type="number" class="form-control" id="gia" name="gia" min="0" required>
+                            <label class="mt-2">Chất liệu</label>
+                            <input class="form-control" id="chatlieu" name="chatlieu" required>
+                        </div>
+                    </div>
+
+                    <label class="mt-2">Chỉnh màu - size - số lượng</label>
+                    <div id="listMauSize_Update"></div>
+                    <button type="button" class="btn btn-outline-primary mt-2" id="btnThemMauSize_Update">+ Thêm màu + size</button>
+
+                    <div class="form-group mt-3">
+                        <label>Mô tả sản phẩm</label>
+                        <textarea class="form-control" id="mota" name="mota" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hướng dẫn sử dụng</label>
+                        <textarea class="form-control" id="huongdan" name="huongdan" rows="4" required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end" style="margin: 15px">
+                        <button class="btn btn-success mr-2" type="submit">Cập nhật</button>
+                        <button class="btn btn-secondary cancelPopup" type="button" id="cancelPopup">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@section deletePopup {
+    <div class="deletePopUp popup-box" id="deletePopUp">
+        <section class="vh-lg-100 d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="signin-inner my-3 my-lg-0 bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <h6 class="form-group mb-4 text-center fa-1x">
+                                Bạn có chắc chắn muốn xóa sản phẩm này không ?
+                            </h6>
+                            <input type="hidden" value="" id="delete-masp" />
+                            <div class="row d-flex flex-row">
+                                <button type="submit" class="btn btn-block btn-danger" onclick="xoaSanPham()">Chắc chắn</button>
+                                <div class="btn btn-block border-primary cancelPopup" id="cancelPopupDel">Hủy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+<!-- TEMPLATE ẨN ĐỂ CLONE -->
+<div id="template-mau-size" style="display:none;">
+    <div class="row align-items-center mb-2 item-mau-size">
+        <div class="col-md-4">
+            <select class="form-select chon-mau">
+                <option disabled selected>-- Chọn màu --</option>
+                @foreach (var mau in ViewBag.MauSac as List<CDTN.Models.MauSac>)
+                {
+                    <option value="@mau.MaMau">@mau.TenMau</option>
+                }
+                <option value="khac">Màu khác (tự chọn)</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select chon-size">
+                <option disabled selected>-- Chọn size --</option>
+                @foreach (var size in ViewBag.Size as List<CDTN.Models.KichCo>)
+                {
+                    <option value="@size.MaKichCo">@size.TenKichCo</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="number" class="form-control so-luong" min="0" placeholder="Số lượng">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-danger btn-remove">Xóa</button>
+        </div>
+    </div>
+</div>
+<!-- Template hidden để JS sử dụng -->
+<div style="display:none">
+    <div id="mauOptionsTemplate">
+        @foreach (var mau in ViewBag.MauSac as List<CDTN.Models.MauSac>)
+        {
+            <text><option value="@mau.MaMau">@mau.TenMau</option></text>
+        }
+    </div>
+    <div id="sizeOptionsTemplate">
+        @foreach (var size in ViewBag.Size as List<CDTN.Models.KichCo>)
+        {
+            <text><option value="@size.MaKichCo">@size.TenKichCo</option></text>
+        }
+    </div>
+</div>
+
+@section Script {
+    <script src="~/Assets/Admin/js/Product.js"></script>
+    <script src="~/Assets/Admin/js/addPopUp.js"></script>
+}

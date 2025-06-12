@@ -1,0 +1,120 @@
+﻿@model CDTN.Models.HoaDon
+@{
+    ViewBag.Title = "Chi tiết hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    decimal tongTien = 0;
+}
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-area mt-30">
+    <div class="container">
+        <div class="breadcrumb">
+            <ul class="d-flex align-items-center">
+                <li>@Html.ActionLink("Trang chủ", "Index", "Home")</li>
+                <li class="active">Chi tiết đơn hàng #@Model.MaHD</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Chi tiết đơn hàng -->
+<div class="cart-main-area ptb-100 ptb-sm-60">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="table-content table-responsive mb-4">
+                    <table class="table table-bordered text-center">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Sản phẩm</th>
+                                <th>Kích cỡ</th>
+                                <th>Màu sắc</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ChiTietHoaDon)
+                            {
+                                var sp = item.SanPhamChiTiet?.SanPham;
+                                var kichco = item.SanPhamChiTiet?.KichCo?.TenKichCo ?? "-";
+                                var mausac = item.SanPhamChiTiet?.MauSac;
+                                var gia = item.GiaMua;
+                                var sl = item.SoLuongMua;
+                                var thanhtien = gia * sl;
+                                tongTien += thanhtien;
+
+                                <tr>
+                                    <td>
+                                        <img src="@Url.Content(sp?.HinhAnh ?? "~/Assets/Client/img/no-image.jpg")" alt="Hình ảnh" width="60" />
+                                    </td>
+                                    <td>@(sp?.TenSP ?? "[Không xác định]")</td>
+                                    <td>@kichco</td>
+                                    <td>
+                                        @if (mausac != null)
+                                        {
+                                            <span style="display:inline-block; width:20px; height:20px; background:@mausac.MaMauHex; border:1px solid #ccc;"></span>
+                                            <div style="font-size:12px;">@mausac.TenMau</div>
+                                        }
+                                        else
+                                        {
+                                            <span>–</span>
+                                        }
+                                    </td>
+                                    <td>@gia.ToString("N0") VNĐ</td>
+                                    <td>@sl</td>
+                                    <td>@thanhtien.ToString("N0") VNĐ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tổng tiền -->
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table text-right">
+                            <tbody>
+                                <tr>
+                                    <th>Tạm tính:</th>
+                                    <td>@tongTien.ToString("N0") VNĐ</td>
+                                </tr>
+
+                                @if (!string.IsNullOrEmpty(Model.DiscountCodeUsed))
+                                {
+                                    <tr>
+                                        <th>Giảm giá (@Model.DiscountCodeUsed):</th>
+                                        <td class="text-success">
+                                            -@(@Model.DiscountAmount?.ToString("N0")) VNĐ
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tổng thanh toán:</th>
+                                        <td class="text-danger font-weight-bold">
+                                            @{
+                                                var tongSauGiam = tongTien - (Model.DiscountAmount ?? 0);
+                                            }
+                                            @tongSauGiam.ToString("N0") VNĐ
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <th>Tổng thanh toán:</th>
+                                        <td class="text-danger font-weight-bold">@tongTien.ToString("N0") VNĐ</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

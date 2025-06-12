@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="storeDB-Web.config Connection String" description="storeDB Connection String used in web.config by the application to access the database." defaultValue="data source=LAP-CUA-TIN\AHIHI;initial catalog=shopingsite;user id=admin;password=1234;App=EntityFramework" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\Admin\\Desktop\\cc\\CDTN\\Nhom9\\CDTN\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='storeDB']/@connectionString" />
+  </parameter>
+</parameters>

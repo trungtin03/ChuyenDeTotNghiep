@@ -1,0 +1,147 @@
+﻿@model PagedList.IPagedList<CDTN.Models.HoaDon>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+@{
+    ViewBag.Title = "Đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .table thead th {
+        background-color: #e0f2fe;
+        color: #0f172a;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f0f9ff;
+    }
+
+    .form-control, .form-select, .input-group-text {
+        border-radius: 8px;
+    }
+
+    .page-item.active .page-link {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: #fff;
+    }
+
+    .page-link {
+        color: #3b82f6;
+    }
+
+    .btn-outline-primary {
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+</style>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <h2 class="h4">Danh sách hóa đơn</h2>
+    </div>
+</div>
+
+<div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+        <div class="col col-md-6 col-lg-4">
+            <form class="d-flex gap-2">
+                <input type="date" class="form-control" name="searchString" value="@ViewBag.searchString" placeholder="Ngày đặt..." />
+                <select class="form-select" name="status">
+                    <option value="">Tất cả hóa đơn</option>
+                    <option @(ViewBag.Status == 0 ? "selected" : "") value="0">Đã hủy</option>
+                    <option @(ViewBag.Status == 1 ? "selected" : "") value="1">Đang chuẩn bị</option>
+                    <option @(ViewBag.Status == 2 ? "selected" : "") value="2">Đang giao</option>
+                    <option @(ViewBag.Status == 3 ? "selected" : "") value="3">Đã thanh toán</option>
+                </select>
+                <button class="btn btn-outline-primary" type="submit">Lọc</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Tên khách hàng</th>
+                <th>Tên người nhận</th>
+                <th>Ngày đặt</th>
+                <th>Địa chỉ nhận</th>
+                <th>Trạng thái</th>
+                <th>Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="group-info">
+                    <td>@item.TaiKhoanNguoiDung.HoTen</td>
+                    <td>@item.HoTenNguoiNhan</td>
+                    <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
+                    <td>@item.DiaChiNhan</td>
+                    <td>
+                        <select class="form-select" id="hd-trangthai-update-@item.MaHD" onchange="doiTrangThai(@item.MaHD)">
+                            @if (item.TrangThai == 0)
+                            {
+                                <option value="0" selected>Đã bị hủy</option>
+                            }
+                            else
+                            {
+                                <option value="1" @(item.TrangThai == 1 ? "selected" : "")>Đang chuẩn bị</option>
+                                <option value="2" @(item.TrangThai == 2 ? "selected" : "")>Đang giao</option>
+                                <option value="3" @(item.TrangThai == 3 ? "selected" : "")>Đã thanh toán</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="icon icon-sm"><span class="fas fa-ellipsis-h icon-dark"></span></span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="@Url.Action("Details", "Bill", new { area = "Admin", id = item.MaHD })">
+                                    <span class="fas fa-info-circle mr-2"></span>Chi tiết đơn hàng
+                                </a>
+                                <a class="dropdown-item text-success" href="@Url.Action("ExportToExcel", "Bill", new { area = "Admin", id = item.MaHD })">
+                                    <span class="fas fa-file-excel mr-2"></span>Xuất Excel
+                                </a>
+                                @if (item.TrangThai != 0)
+                                {
+                                    <button class="dropdown-item text-danger" type="button" onclick="huyDonHang(@item.MaHD)">
+                                        <span class="fas fa-trash-alt mr-2"></span>Hủy đơn hàng
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+                @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+                @Html.PagedListPager(Model, page => Url.Action("Index", new
+                {
+                    page,
+                    pageSize = Model.PageSize,
+                    searchString = ViewBag.searchString,
+                    status = ViewBag.Status
+                }))
+            </ul>
+        </nav>
+    </div>
+</div>
+@section Script {
+    <script src="~/Assets/Admin/js/Bill.js"></script>
+    <script src="~/Assets/Admin/js/addPopUpBill.js"></script>
+}
+

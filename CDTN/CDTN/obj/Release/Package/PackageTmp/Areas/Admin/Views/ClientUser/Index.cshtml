@@ -1,0 +1,177 @@
+﻿@model PagedList.IPagedList<CDTN.Models.TaiKhoanNguoiDung>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Quản lý tài khoản người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .table thead th {
+        background-color: #e0f2fe;
+        color: #0f172a;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f0f9ff;
+    }
+
+    .btn-outline-primary {
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+    }
+
+    .btn-group .btn {
+        border-radius: 6px;
+    }
+
+    .page-item.active .page-link {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: #fff;
+    }
+
+    .page-link {
+        color: #3b82f6;
+    }
+</style>
+<!-- Navigation cho tab -->
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(ViewBag.ActiveTab == "all" ? "active" : "")" href="@Url.Action("Index", "ClientUser", new { area = "Admin" })">Tất cả tài khoản</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewBag.ActiveTab == "pending" ? "active" : "")" href="@Url.Action("Pending", "ClientUser", new { area = "Admin" })">Tài khoản chờ kích hoạt</a>
+    </li>
+</ul>
+<div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+        <div class="col col-md-6 col-lg-3 col-xl-4">
+            <form>
+                <div class="input-group">
+                    <button class="input-group-text" id="basic-addon2"><span class="fas fa-search"></span></button>
+                    <input type="text" class="form-control" name="searchString" value="@ViewBag.searchString" placeholder="Tên đăng nhập" aria-label="Search" aria-describedby="basic-addon2" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Họ và tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Ngày sinh</th>
+                <th>Email</th>
+                <th>Giới tính</th>
+                <th>Trạng thái</th>
+                <th>Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="row-@item.MaTK">
+                    <td>@item.HoTen</td>
+                    <td>@item.TenDangNhap</td>
+                    <td>@item.SoDienThoai</td>
+                    <td>@item.DiaChi</td>
+                    <td>@item.NgaySinh.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Email</td>
+                    <td>@(item.GioiTinh ? "Nam" : "Nữ")</td>
+                    <td>
+                        @if (item.TrangThai)
+                        {
+                            <span class="text-success font-weight-bold">Đã kích hoạt</span>
+                        }
+                        else
+                        {
+                            <span class="text-warning font-weight-bold">Chờ kích hoạt</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown">
+                                <span class="icon icon-sm"><span class="fas fa-ellipsis-h icon-dark"></span></span>
+                                <span class="sr-only">Tùy chọn</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                @if (!item.TrangThai)
+                                {
+                                    <button class="dropdown-item" onclick="kichHoatTaiKhoan(@item.MaTK)">
+                                        <span class="fas fa-check-circle mr-2"></span>Kích hoạt
+                                    </button>
+                                }
+                                <button class="dropdown-item text-danger" onclick="deleteData(@item.MaTK)">
+                                    <span class="fas fa-trash-alt mr-2"></span>Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card-footer d-flex align-items-center justify-content-between">
+        @Html.PagedListPager(Model, page => Url.Action(
+            ViewBag.ActiveTab == "pending" ? "Pending" : "Index",
+            new { page, pageSize = Model.PageSize, searchString = ViewBag.searchString, area = "Admin" }))
+    </div>
+</div>
+
+@section Script {
+    <script>
+        function kichHoatTaiKhoan(maTK) {
+            if (confirm("Bạn có chắc muốn kích hoạt tài khoản này không?")) {
+                $.ajax({
+                    url: '@Url.Action("Update", "ClientUser", new { area = "Admin" })',
+                    type: 'POST',
+                    data: { Matk: maTK },
+                    success: function (response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("Có lỗi xảy ra, vui lòng thử lại sau!");
+                    }
+                });
+            }
+        }
+
+        function deleteData(maTK) {
+            if (confirm("Bạn có chắc muốn xóa tài khoản này không?")) {
+                $.ajax({
+                    url: '@Url.Action("Delete", "ClientUser", new { area = "Admin" })',
+                    type: 'POST',
+                    data: { id: maTK },
+                    success: function (response) {
+                        if (response.status) {
+                            $("#row-" + maTK).fadeOut("slow");
+                        } else {
+                            alert("Xóa không thành công.");
+                        }
+                    },
+                    error: function () {
+                        alert("Có lỗi xảy ra!");
+                    }
+                });
+            }
+        }
+    </script>
+}

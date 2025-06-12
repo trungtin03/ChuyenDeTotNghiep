@@ -1,0 +1,122 @@
+﻿@model PagedList.IPagedList<CDTN.Models.ThongBao>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Quản lý Thông báo";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .table thead th {
+        background-color: #e0f2fe;
+        color: #0f172a;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f0f9ff;
+    }
+
+    .btn-success {
+        font-weight: 500;
+        border-radius: 6px;
+    }
+
+        .btn-success:hover {
+            background-color: #16a34a;
+            border-color: #16a34a;
+        }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 6px;
+        margin-top: 16px;
+    }
+
+        .pagination .page-link {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            color: #1d4ed8;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            color: #fff;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #bfdbfe;
+            text-decoration: none;
+        }
+</style>
+
+<h3 class="mb-4">Danh sách Thông báo</h3>
+
+<form method="get" class="form-inline mb-3">
+    <label class="mr-2">Lọc theo loại:</label>
+    <select name="loai" class="form-control mr-2" onchange="this.form.submit()">
+        <option value="">Tất cả</option>
+        @foreach (var item in ViewBag.LoaiDanhSach as List<string>)
+        {
+            <option value="@item" @(ViewBag.Loai == item ? "selected" : "")>@item</option>
+        }
+    </select>
+</form>
+
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th style="width: 60%;">Nội dung</th>
+                <th>Loại</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="@(item.DaXem ? "" : "table-warning")">
+                    <td>@item.NoiDung</td>
+                    <td>@item.Loai</td>
+                    <td>@item.ThoiGian.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <span class="@(item.DaXem ? "text-success" : "text-warning") font-weight-bold">
+                            @(item.DaXem ? "Đã đọc" : "Chưa đọc")
+                        </span>
+                    </td>
+                    <td>
+                        @if (!item.DaXem)
+                        {
+                            <button class="btn btn-sm btn-success" onclick="markAsRead(@item.ID)">Đánh dấu đã đọc</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card-footer d-flex align-items-center justify-content-between">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, loai = ViewBag.Loai }))
+    </div>
+</div>
+
+@section Script {
+    <script>
+        function markAsRead(id) {
+            $.post('@Url.Action("MarkAsRead", "ThongBao", new { area = "Admin" })', { id: id }, function (res) {
+                if (res.status) location.reload();
+                else alert("Thao tác thất bại");
+            });
+        }
+    </script>
+}

@@ -1,0 +1,202 @@
+﻿@{
+    ViewBag.Title = "Điều Khoản & Chính Sách";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="mb-3 breadcrumb bg-light p-2 rounded">
+                <a href="/" class="text-dark text-decoration-none">Trang chủ</a>
+                <span class="mx-1">/</span>
+                <span class="text-danger">Điều Khoản & Chính Sách</span>
+            </div>
+
+            <div class="list-group shadow-sm rounded">
+                <a href="@Url.Action("Contact", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-phone me-2"></i> Liên hệ
+                </a>
+                <a href="@Url.Action("BuyGuide", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-shopping-cart me-2"></i> Hướng dẫn mua hàng
+                </a>
+                <a href="@Url.Action("SizeGuide", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-ruler me-2"></i> Hướng dẫn chọn size
+                </a>
+                <a href="@Url.Action("Policy", "Support")" class="list-group-item list-group-item-action active">
+                    <i class="fa fa-file-contract me-2"></i> Điều khoản & Chính sách
+                </a>
+                <a href="@Url.Action("Faq", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-question-circle me-2"></i> Câu hỏi thường gặp
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="p-4 bg-white shadow-sm rounded">
+                <h3 class="fw-bold text-primary mb-4">Điều Khoản & Chính Sách</h3>
+
+                <div class="accordion" id="policyAccordion">
+                    <!-- Chính Sách Bảo Hành & Đổi Trả -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                Chính Sách Bảo Hành & Đổi Trả
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <h5 class="text-danger fw-bold">QUÝ KHÁCH LƯU Ý KHI MUA HÀNG</h5>
+                                <ul>
+                                    <li>Quý khách vui lòng kiểm tra hàng hóa trước khi rời quầy thu ngân.</li>
+                                    <li>Nếu nhân viên không xuất hóa đơn hoặc phát hiện có dấu hiệu gian lận, vui lòng gọi <strong>090.1800.888 (Bấm số 8)</strong>. Quý khách được <strong>miễn phí</strong> đơn hàng đó (phản ánh trong <strong>24h</strong>).</li>
+                                </ul>
+
+                                <h5 class="text-danger fw-bold mt-4">CHÍNH SÁCH ĐỔI TRẢ</h5>
+                                <ul>
+                                    <li>Đổi trả trong <strong>07 ngày</strong> (từ lúc mua hàng).</li>
+                                    <li>Chỉ được đổi <strong>01 lần</strong>.</li>
+                                    <li>Áp dụng với sản phẩm lỗi do sản xuất: loang màu, dây kéo, rút chỉ, vải lỗi,...</li>
+                                    <li>Sản phẩm cần còn <strong>đầy đủ nhãn mác và hóa đơn</strong>.</li>
+                                    <li>Không hỗ trợ với hàng đã qua sử dụng, giặt tẩy, hoặc có dấu hiệu bên ngoài.</li>
+                                    <li>Đổi sản phẩm cùng hoặc cao giá hơn.</li>
+                                    <li><strong>Không áp dụng</strong> cho hàng khuyến mãi, đồ lót, phụ kiện,...</li>
+                                    <li>Chỉ đổi cho khách hàng <strong>có đăng ký thành viên</strong>.</li>
+                                </ul>
+
+                                <h5 class="text-danger fw-bold mt-4">CHÍNH SÁCH BẢO HÀNH</h5>
+                                <ul>
+                                    <li>Bảo hành chất lượng sản phẩm <strong>trọn đời (01 đổi 01)</strong>.</li>
+                                    <li>Chỉ áp dụng với khách đã đăng ký thành viên.</li>
+                                    <li>Áp dụng cho lỗi sản xuất như loang màu, rút chỉ, dây kéo lỗi,...</li>
+                                    <li>Không áp dụng với lỗi do tác nhân bên ngoài.</li>
+                                    <li>Miễn phí cắt khuy, bấm lỗ nút. Có phí với yêu cầu thêm phụ kiện.</li>
+                                </ul>
+
+                                <p class="mt-3 text-muted">
+                                    * Thời gian đổi/trả hàng hóa: 10h00 – 22h00<br>
+                                    * Tiếp nhận bảo hành: 08h00 – 22h00<br>
+                                    * Địa điểm: Tại cửa hàng TrueMart mà quý khách đã mua.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chính Sách Vận Chuyển -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                Chính Sách Vận Chuyển
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <h5 class="text-dark fw-bold">I. Chính sách vận chuyển</h5>
+                                <p><strong>1. Phương thức vận chuyển:</strong></p>
+                                <ul><li>Giao hàng qua GHTK</li></ul>
+
+                                <p><strong>2. Phạm vi áp dụng:</strong></p>
+                                <ul>
+                                    <li>Trong Nha Trang: 15.000 VNĐ</li>
+                                    <li>Ngoại tỉnh: 30.000đ (&lt;500gr), 35.000đ (500g – 1000gr)</li>
+                                    <li>Biển đảo: 50.000đ</li>
+                                </ul>
+
+                                <p><strong>3. Thời gian giao hàng:</strong></p>
+                                <ul>
+                                    <li>Đà Nẵng (nội thành): trong ngày (trừ CN)</li>
+                                    <li>TP.HCM, Hà Nội, Cần Thơ,...: 1–3 ngày</li>
+                                    <li>Các tỉnh khác: 4–7 ngày</li>
+                                </ul>
+
+                                <p><strong>*Lưu ý:</strong></p>
+                                <ul>
+                                    <li>Xử lý đơn hàng sau khi thanh toán hoàn tất</li>
+                                    <li>Có thể thay đổi do điều kiện đặc biệt hoặc yêu cầu khách hàng</li>
+                                    <li>Freeship áp dụng với đơn giá gốc (không giảm giá)</li>
+                                </ul>
+
+                                <h5 class="text-dark fw-bold mt-4">II. Hình thức thanh toán</h5>
+                                <ul>
+                                    <li><strong>1. COD:</strong> Thanh toán khi nhận hàng</li>
+                                    <li><strong>2. Chuyển khoản:</strong></li>
+                                    <ul>
+                                        <li>Tên: Trần Trung Tín</li>
+                                        <li>Ngân hàng: MB Bank</li>
+                                        <li>Số tài khoản: 79614112003 </li>
+                                    </ul>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chính Sách Bảo Mật & Thông Tin -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                Chính Sách Bảo Mật & Chia Sẻ Thông Tin
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <p><strong>1. Chính sách bảo mật thông tin khách hàng:</strong> Chúng tôi cam kết bảo mật tuyệt đối với mọi thông tin cá nhân của khách hàng theo đúng quy định của pháp luật Việt Nam.</p>
+
+                                <p><strong>2. Phạm vi thu thập thông tin:</strong> Bao gồm họ tên, số điện thoại, email, địa chỉ giao hàng,... và các thông tin được cung cấp khi đăng ký tài khoản.</p>
+
+                                <p><strong>3. Thời gian lưu trữ:</strong> Dữ liệu được lưu trữ đến khi có yêu cầu hủy hoặc khách hàng hủy tài khoản.</p>
+
+                                <p><strong>4. Người/tổ chức tiếp cận thông tin:</strong> Bao gồm nhân viên nội bộ, bên vận chuyển hoặc cơ quan có thẩm quyền (theo luật).</p>
+
+                                <p>
+                                    <strong>5. Địa chỉ quản lý:</strong><br>
+                                    CÔNG TY TNHH MTV THƯƠNG MẠI TRUNG VŨ<br>
+                                    48 Yên Bái - Hải Châu 1 - Q. Hải Châu, Đà Nẵng<br>
+                                    Điện thoại: 0901 800 888<br>
+                                    Email: cskh@fmstyle.com.vn
+                                </p>
+
+                                <p><strong>6. Quyền truy cập và chỉnh sửa:</strong> Khách hàng có quyền yêu cầu truy cập, sửa hoặc xóa dữ liệu thông tin của mình bất kỳ lúc nào qua hệ thống quản trị thành viên hoặc liên hệ trực tiếp với quản trị viên.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .list-group-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    .list-group-item.active {
+        background-color: #fff0e9;
+        border-color: #ffc2a6;
+        color: #d94321;
+        font-weight: bold;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #d94321;
+        background-color: #fff5f1;
+    }
+
+    .accordion-item {
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .accordion-body ul {
+        padding-left: 1.2rem;
+    }
+
+        .accordion-body ul li {
+            margin-bottom: 6px;
+        }
+</style>

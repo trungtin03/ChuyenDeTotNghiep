@@ -1,0 +1,102 @@
+﻿@model IEnumerable<CDTN.Models.Quyen>
+@{
+    ViewBag.Title = "Quản lý quyền";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center py-3">
+    <h2 class="h4">Danh sách quyền</h2>
+    <button class="btn btn-primary btn-sm" onclick="openAdd()">+ Thêm quyền</button>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã quyền</th>
+            <th>Tên quyền</th>
+            <th>Mô tả</th>
+            <th>Tùy chọn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MaQuyen</td>
+                <td>@item.TenQuyen</td>
+                <td>@item.MoTa</td>
+                <td>
+                    <button class="btn btn-sm btn-secondary" onclick="edit(@item.MaQuyen)">Sửa</button>
+                    <button class="btn btn-sm btn-danger" onclick="remove(@item.MaQuyen)">Xóa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Popup -->
+<div id="quyenPopup" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form id="form-quyen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thông tin quyền</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MaQuyen" name="MaQuyen" />
+                    <div class="form-group">
+                        <label>Tên quyền</label>
+                        <input type="text" name="TenQuyen" id="TenQuyen" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea name="MoTa" id="MoTa" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Script {
+    <script>
+        function openAdd() {
+            $('#form-quyen')[0].reset();
+            $('#MaQuyen').val('');
+            $('#quyenPopup').modal('show');
+        }
+
+        function edit(id) {
+            $.post('/Admin/Quyen/Details', { id: id }, function (res) {
+                $('#MaQuyen').val(res.MaQuyen);
+                $('#TenQuyen').val(res.TenQuyen);
+                $('#MoTa').val(res.MoTa);
+                $('#quyenPopup').modal('show');
+            });
+        }
+
+        function remove(id) {
+            if (confirm('Xác nhận xóa quyền này?')) {
+                $.post('/Admin/Quyen/Delete', { id: id }, function (res) {
+                    if (res.status) location.reload();
+                    else alert("Xóa thất bại");
+                });
+            }
+        }
+
+        $('#form-quyen').submit(function (e) {
+            e.preventDefault();
+            let data = $(this).serialize();
+            let url = $('#MaQuyen').val() ? '/Admin/Quyen/Update' : '/Admin/Quyen/Create';
+            $.post(url, data, function (res) {
+                if (res.status) location.reload();
+                else alert(res.message || "Lỗi");
+            });
+        });
+    </script>
+}

@@ -1,0 +1,33 @@
+﻿@model CDTN.Models.TaiKhoanQuanTri
+@{
+    var danhSachQuyen = ViewBag.DanhSachQuyen as List<CDTN.Models.Quyen>;
+    var danhSachChucNang = ViewBag.DanhSachChucNang as List<CDTN.Models.ChucNang>;
+    var quyenDaGan = ViewBag.QuyenDaGan as List<int>;
+}
+
+<h4 class="mb-3">Phân quyền cho: <strong class="text-primary">@Model.HoTen</strong></h4>
+<form id="formGanQuyen">
+    <input type="hidden" name="IDTaiKhoan" value="@Model.ID" />
+
+    @foreach (var cn in danhSachChucNang)
+    {
+        <h5 class="mt-3">@cn.TenChucNang</h5>
+        <div class="row">
+            @foreach (var q in danhSachQuyen.Where(x => x.MaCN == cn.MaCN))
+            {
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="quyenIds" value="@q.MaQuyen"
+                               @(quyenDaGan.Contains(q.MaQuyen) ? "checked" : "") />
+                        <label class="form-check-label">@q.TenQuyen</label>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="mt-4 text-end">
+        <button type="button" class="btn btn-secondary" onclick="$('#phanQuyenModal').modal('hide')">Hủy</button>
+        <button type="submit" class="btn btn-primary">Lưu phân quyền</button>
+    </div>
+</form>

@@ -1,0 +1,107 @@
+﻿@model List<CDTN.Models.HoaDon>
+@{
+    ViewBag.Title = "Đơn hàng của bạn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    var selectedStatus = Request.QueryString["status"];
+}
+
+<div class="breadcrumb-area mt-30">
+    <div class="container">
+        <div class="breadcrumb">
+            <ul class="d-flex align-items-center">
+                <li>@Html.ActionLink("Trang chủ", "Index", "Home")</li>
+                <li class="active">@Html.ActionLink("Đơn hàng của bạn", "ListBills", "Bill")</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="cart-main-area ptb-100 ptb-sm-60">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <form method="get" class="mb-3">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Trạng thái:</label>
+                        <div class="col-sm-4">
+                            <select name="status" class="form-control" onchange="this.form.submit()">
+                                <option value="">Tất cả</option>
+                                <option value="1" @(selectedStatus == "1" ? "selected" : "")>Đang chuẩn bị</option>
+                                <option value="2" @(selectedStatus == "2" ? "selected" : "")>Đang giao</option>
+                                <option value="3" @(selectedStatus == "3" ? "selected" : "")>Đã thanh toán</option>
+                                <option value="0" @(selectedStatus == "0" ? "selected" : "")>Đã bị hủy</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-content table-responsive mb-45">
+                    @if (Model.Count == 0)
+                    {
+                        <h2>Không có đơn hàng nào.</h2>
+                    }
+                    else
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày đặt</th>
+                                    <th>Người nhận</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Trạng thái</th>
+                                    <th>Chi tiết</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.NgayDat.ToString("dd/MM/yyyy HH:mm", info)</td>
+                                        <td>@item.HoTenNguoiNhan</td>
+                                        <td>@item.SoDienThoaiNhan</td>
+                                        <td>
+                                            @if (item.TrangThai == 0)
+                                            {
+                                                <span class="badge badge-danger">Đã bị hủy</span>
+                                            }
+                                            else if (item.TrangThai == 1)
+                                            {
+                                                <span class="badge badge-warning">Đang chuẩn bị</span>
+                                            }
+                                            else if (item.TrangThai == 2)
+                                            {
+                                                <span class="badge badge-primary">Đang giao</span>
+                                            }
+                                            else if (item.TrangThai == 3)
+                                            {
+                                                <span class="badge badge-success">Đã thanh toán</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary">Không xác định</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("Details", "Bill", new { id = item.MaHD })" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                                        </td>
+                                        <td>
+                                            @if (item.TrangThai == 1)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="huyDonHang(@item.MaHD)">Hủy đơn</button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script {
+    <script src="~/Assets/Client/js/common.js"></script>
+}

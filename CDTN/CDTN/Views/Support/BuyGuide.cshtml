@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "Hướng Dẫn Mua Hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="mb-3 breadcrumb">
+                <a href="/" class="text-dark text-decoration-none">Trang chủ</a>
+                <span class="mx-1">/</span>
+                <span class="text-danger">Hướng Dẫn Mua Hàng</span>
+            </div>
+
+            <div class="list-group shadow-sm rounded">
+                <a href="@Url.Action("Contact", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-phone me-2"></i> Liên hệ
+                </a>
+                <a href="#" class="list-group-item list-group-item-action active">
+                    <i class="fa fa-shopping-cart me-2"></i> Hướng dẫn mua hàng
+                </a>
+                <a href="@Url.Action("SizeGuide", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-ruler me-2"></i> Hướng dẫn chọn size
+                </a>
+                <a href="@Url.Action("Policy", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-file-contract me-2"></i> Điều khoản & Chính sách
+                </a>
+                <a href="@Url.Action("Faq", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-question-circle me-2"></i> Câu hỏi thường gặp
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="p-5 bg-white rounded shadow-sm border">
+                <h4 class="fw-bold mb-4 text-primary">Hướng Dẫn Mua Hàng</h4>
+
+                <p class="fst-italic">Chỉ cần ngồi ở nhà bạn cũng có thể dễ dàng mua hàng chỉ với vài thao tác đơn giản sau:</p>
+                <ul class="list-unstyled mb-4 ps-3">
+                    <li><strong>Cách 1:</strong> Gọi điện thoại đến tổng đài của TrueMart: <strong>090 1800 888</strong> (Phím 7) để được tư vấn.</li>
+                    <li><strong>Cách 2:</strong> Đặt mua online tại website: <strong class="text-danger">truemart.vn</strong></li>
+                </ul>
+
+                <h5 class="text-danger fw-bold">Bước 1: Đăng ký tài khoản</h5>
+                <p>Bấm chọn “Đăng ký” để đăng ký tài khoản TrueMart.</p>
+                <img src="/Assets/Images/huong-dan-mua-hang-01.png" class="img-fluid rounded mb-2" alt="Đăng ký tài khoản">
+                <img src="/Assets/Images/huong-dan-mua-hang-02.png" class="img-fluid rounded mb-2" alt="Nhập OTP">
+                <p>Nhập OTP và thông tin là bạn đã có thể đăng nhập.</p>
+                <img src="/Assets/Images/huong-dan-mua-hang-03.png" class="img-fluid rounded mb-4" alt="Hoàn tất đăng ký">
+
+                <h5 class="text-danger fw-bold">Bước 2: Tìm sản phẩm muốn mua bằng nhiều cách như:</h5>
+                <ul>
+                    <li>Bấm vào danh mục sản phẩm: Nam/ Nữ/ Đồ đôi…</li>
+                    <li>Sử dụng ô “Tìm kiếm”, ví dụ: “áo sơ mi nữ”.</li>
+                    <li>Chọn mục "Mua theo thể loại" để lọc sản phẩm.</li>
+                </ul>
+                <img src="/Assets/Images/huong-dan-mua-hang-05.png" class="img-fluid rounded mb-2" alt="Tìm kiếm sản phẩm">
+                <img src="/Assets/Images/huong-dan-mua-hang-06.png" class="img-fluid rounded mb-4" alt="Danh mục sản phẩm">
+
+                <h5 class="text-danger fw-bold">Bước 3: Chọn thông tin sản phẩm</h5>
+                <p>Chọn đầy đủ các thông tin: mẫu + size + số lượng sản phẩm cần mua.</p>
+                <img src="/Assets/Images/huong-dan-mua-hang-07.png" class="img-fluid rounded mb-4" alt="Chọn thông tin sản phẩm">
+                <p>Sau đó bấm "<strong>Thêm vào giỏ hàng</strong>" hoặc "<strong>Mua ngay</strong>".</p>
+
+                <h5 class="text-danger fw-bold">Bước 4: Đặt hàng</h5>
+                <p>Nhập địa chỉ</p>
+                <img src="/Assets/Images/huong-dan-mua-hang-08.png" class="img-fluid rounded mb-2" alt="Đặt hàng">
+                <p>Nếu đơn > 499.000đ sẽ được miễn phí vận chuyển.</p>
+                <p>Chọn dùng mã giảm giá nếu có.</p>
+                <p>Sau đó bấm “<strong>Đặt hàng</strong>” → hệ thống sẽ thông báo "Đã đặt hàng thành công".</p>
+
+                <h5 class="text-danger fw-bold">Bước 5: Theo dõi đơn hàng</h5>
+                <p>Vào mục "Quản lý đơn hàng" để xem trạng thái. Hàng sẽ đến trong vòng 2 - 4 ngày làm việc.</p>
+                <img src="/Assets/Images/huong-dan-mua-hang-09.png" class="img-fluid rounded" alt="Theo dõi đơn hàng">
+
+                <div class="alert alert-info mt-4">
+                    Trong trường hợp có sự cố, bạn có thể liên hệ ngay với <strong>Trung tâm trợ giúp TrueMart</strong> để được hỗ trợ nhanh chóng.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    body {
+        background-color: #f9f9f9;
+    }
+
+    .breadcrumb span {
+        font-weight: 500;
+    }
+
+    .list-group-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    .list-group-item.active {
+        background-color: #fff0e9;
+        border-color: #ffc2a6;
+        color: #d94321;
+        font-weight: bold;
+    }
+</style>

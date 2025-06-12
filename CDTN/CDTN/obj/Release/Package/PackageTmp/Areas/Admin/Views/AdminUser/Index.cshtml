@@ -1,0 +1,366 @@
+﻿@model PagedList.IPagedList<CDTN.Models.TaiKhoanQuanTri>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+@{
+    ViewBag.Title = "Tài khoản quản trị";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .table thead th {
+        background-color: #e0f2fe;
+        color: #0f172a;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f0f9ff;
+    }
+
+    .btn-outline-primary {
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+    }
+
+    .btn-group .btn {
+        border-radius: 6px;
+    }
+
+    .page-item.active .page-link {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: #fff;
+    }
+
+    .page-link {
+        color: #3b82f6;
+    }
+</style>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <h2 class="h4">Danh sách tài khoản quản trị</h2>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="addPopup">
+                <span class="fas fa-plus mr-2"></span>Thêm tài khoản quản trị
+            </button>
+        </div>
+    </div>
+</div>
+<div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+        <div class="col col-md-6 col-lg-3 col-xl-4">
+            <form>
+                <div class="input-group">
+                    <button class="input-group-text" id="basic-addon2">
+                        <span class="fas fa-search"></span>
+                    </button>
+                    <input type="text" class="form-control" name="searchString" value="@ViewBag.searchString" id="exampleInputIconLeft" placeholder="Tên đăng nhập" aria-label="Search" aria-describedby="basic-addon2">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Họ và tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Loại tài khoản</th>
+                <th>Trạng thái</th>
+                <th>Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="row-@item.ID">
+                    <td><span class="font-weight-normal">@item.HoTen</span></td>
+                    <td><span class="font-weight-normal">@item.TenDangNhap</span></td>
+                    <td><span class="font-weight-normal">@(item.LoaiTaiKhoan ? "Người quản trị" : "Quản lý")</span></td>
+                    <td>
+                        <span class="font-weight-bold @(item.TrangThai ? "text-success" : "text-danger")">
+                            @(item.TrangThai ? "Đã kích hoạt" : "Đã vô hiệu hóa")
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown">
+                                <span class="icon icon-sm">
+                                    <span class="fas fa-ellipsis-h icon-dark"></span>
+                                </span>
+                                <span class="sr-only">Danh mục lựa chọn</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item change" onclick="loadData(@item.ID)"><span class="fas fa-edit mr-2"></span>Chỉnh sửa</button>
+                                <button class="dropdown-item text-danger delete" onclick="deleteData(@item.ID)"><span class="fas fa-trash-alt mr-2"></span>Xóa</button>
+                                <button class="dropdown-item text-primary" onclick="moPhanQuyen(@item.ID)"><span class="fas fa-user-shield mr-2"></span>Phân quyền</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+                @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = Model.PageSize, searchString = ViewBag.searchString }))
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Popup{
+    <div class="popUp" id="popUp" style="z-index: 600">
+        <section class="d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image" data-background-lg="~/Assets/Admin/assets/img/illustrations/signin.svg">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="signin-inner my-3 my-lg-0 bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h3 text-popup">Tạo tài khoản quản trị</h1>
+                            </div>
+                            <form id="add-form" onsubmit="return themTaiKhoanAdmin()">
+                                <!-- Form -->
+                                <p id="add-message"></p>
+                                <hr />
+                                <div class="form-group mb-2">
+                                    <label for="adminAccount">Tên đăng nhập</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="tendangnhap" placeholder="Tên đăng nhập" autofocus required>
+                                    </div>
+                                </div>
+                                <!-- End of Form -->
+                                <!-- Form -->
+                                <div class="form-group mb-2">
+                                    <label for="fullName">Họ và tên</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="hoten" placeholder="Họ và tên" required>
+                                    </div>
+                                </div>
+                                <!-- End of Form -->
+                                <!-- Form -->
+                                <div class="form-group mb-2">
+                                    <label for="optionsAccount">Loại tài khoản</label>
+                                    <div class="input-group" style="display: flex; align-items: center" id="optionsAccount">
+                                        <input type="radio" name="loaitaikhoan" id="statusAdmin" value="true" style="margin-right: 10px" />
+                                        <label for="statusAdmin" style="display: contents;">Người quản trị</label>
+                                        <input type="radio" name="loaitaikhoan" id="statusManage" value="false" checked style="margin: 0 10px 0 20px" />
+                                        <label for="statusManage" style="display: contents">Quản lý</label>
+                                    </div>
+                                </div>
+                                <!-- End of Form -->
+                                <div class="form-group">
+                                    <!-- Form -->
+                                    <div class="form-group mb-2">
+                                        <label for="password">Mật khẩu</label>
+                                        <div class="input-group">
+                                            <input type="password" name="matkhau" placeholder="Mật khẩu" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <!-- End of Form -->
+                                    <!-- Form -->
+                                    <div class="form-group mb-2">
+                                        <label for="confirm_password">Xác nhận mật khẩu</label>
+                                        <div class="input-group">
+                                            <input type="password" name="nhaplaimatkhau" placeholder="Xác nhận mật khẩu" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-block btn-primary">Đăng ký</button>
+                                <div class="btn btn-block border-primary cancelPopup" id="cancelPopup">Hủy</div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+
+@section changePopup {
+    <div class="changePopUp" id="changePopUp" style="z-index: 600">
+        <section class=" d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image" data-background-lg="../../assets/img/illustrations/signin.svg">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="signin-inner my-3 my-lg-0 bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h3 text-popup">Chỉnh sửa tài khoản quản trị</h1>
+                            </div>
+                            <form id="update-form" onsubmit="return suaTaiKhoanQuanTri()">
+                                <p id="update-message"></p>
+                                <hr />
+                                <input type="hidden" id="matk" name="id" value="" />
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <label for="adminAccount">Tên đăng nhập</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="tendangnhap" name="tendangnhap" required>
+                                    </div>
+                                </div>
+                                <!-- End of Form -->
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <label for="fullName">Họ và tên</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="hoten" name="hoten" required>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-4">
+                                    <label for="optionsAccount">Loại tài khoản</label>
+                                    <div class="input-group" style="display: flex; align-items: center" id="optionsAccount">
+                                        <input type="radio" name="loaitaikhoan" value="true" id="admin-role" style="margin-right: 10px" />
+                                        <label for="admin-role" style="display: contents;">Người quản trị</label>
+                                        <input type="radio" name="loaitaikhoan" value="false" id="manager-role" style="margin: 0 10px 0 20px" />
+                                        <label for="manager-role" style="display: contents">Quản lý</label>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-4">
+                                    <label for="optionsAccount">Trạng thái tài khoản</label>
+                                    <div class="input-group" style="display: flex; align-items: center" id="optionsAccount">
+                                        <input type="radio" name="trangthai" value="true" id="actived" style="margin-right: 10px" />
+                                        <label for="actived" class="text-success" style="display: contents;">Kích hoạt</label>
+
+                                        <input type="radio" name="trangthai" value="false" id="blocked" style="margin: 0 10px 0 20px" />
+                                        <label for="blocked" class="text-danger" style="display: contents">Vô hiệu hóa</label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-block btn-secondary">Chỉnh sửa tài khoản</button>
+                                <div class="btn btn-block border-primary cancelPopup" id="cancelPopup">Hủy</div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+
+@section deletePopup {
+    <div class="deletePopUp" id="deletePopUp" style="z-index: 600">
+        <section class="vh-lg-100 d-flex align-items-center">
+            <div class="container">
+                <form>
+                    <div class="row justify-content-center form-bg-image">
+                        <div class="col-12 d-flex align-items-center justify-content-center">
+                            <div class="signin-inner my-3 my-lg-0 bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                                <p id="delete-message"></p>
+                                <h6 class="form-group mb-4 text-center fa-1x">
+                                    Bạn có thể vô hiệu hóa thay vì xóa tài khoản. Bạn đã chắc chắn chưa?
+                                </h6>
+                                <input type="hidden" value="" id="delete-adminuser-id" name="id" />
+                                <div class="row d-flex flex-row">
+                                    <button type="button" class="btn btn-block btn-danger" onclick="xoaTaiKhoan()">Chắc chắn</button>
+                                    <div class="btn btn-block border-primary cancelPopup" id="cancelPopupDel">Hủy</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+}
+@section phanQuyenPopup {
+    <div class="phanQuyenPopUp" id="phanQuyenPopUp" style="display: none;">
+        <div class="overlay" onclick="dongPhanQuyen()"></div>
+        <div class="popup-content bg-white p-4 rounded shadow" style="max-width: 600px; margin: 10% auto; position: relative;">
+            <h4 class="mb-3">Phân quyền cho tài khoản</h4>
+            <form id="phanQuyenForm">
+                <input type="hidden" id="phanquyen-userid" />
+                <div id="phanQuyenCheckboxList">
+                    <!-- Danh sách quyền sẽ được render tại đây -->
+                </div>
+                <div class="mt-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-success" onclick="luuPhanQuyen(event)">Lưu</button>
+                    <button type="button" class="btn btn-secondary" onclick="dongPhanQuyen()">Đóng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<div id="phanQuyenPopupContainer"></div>
+@section Script{
+    <script src="~/Assets/Admin/js/addPopUp.js"></script>
+    <script src="~/Assets/Admin/js/AdminAccount.js"></script>
+    <script>
+        function moPhanQuyen(id) {
+            $('#phanquyen-userid').val(id);
+            $('#phanQuyenCheckboxList').html('');
+            $.get("/Admin/Quyen/GanQuyen/" + id, function (res) {
+                let html = '';
+                let group = {};
+                res.danhSachQuyen.forEach(q => {
+                    if (!group[q.ChucNang.TenChucNang]) group[q.ChucNang.TenChucNang] = [];
+                    group[q.ChucNang.TenChucNang].push(q);
+                });
+
+                for (let cn in group) {
+                    html += `<div><strong>${cn}</strong><div class="ml-3">`;
+                    group[cn].forEach(q => {
+                        const checked = res.quyenDaGan.includes(q.MaQuyen) ? "checked" : "";
+                        html += `<div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="quyenIds" value="${q.MaQuyen}" ${checked}>
+                                            <label class="form-check-label">${q.TenQuyen}</label>
+                                         </div>`;
+                    });
+                    html += `</div></div><hr/>`;
+                }
+
+                $('#phanQuyenCheckboxList').html(html);
+                $('#phanQuyenPopUp').fadeIn();
+            });
+        }
+
+        function dongPhanQuyen() {
+            $('#phanQuyenPopUp').fadeOut();
+        }
+
+        function luuPhanQuyen(event) {
+            var btn = $(event.target);
+            btn.prop('disabled', true).text("Đang lưu...");
+
+            var id = $('#phanquyen-userid').val();
+            var selected = [];
+            $('input[name="quyenIds"]:checked').each(function () {
+                selected.push(parseInt($(this).val()));
+            });
+
+            $.post("/Admin/Quyen/LuuPhanQuyen", {
+                IDTaiKhoan: id,
+                quyenIds: selected
+            })
+                .done(function (res) {
+                    btn.prop('disabled', false).text("Lưu");
+                    if (res.success) {
+                        Swal.fire("Thành công!", "Phân quyền đã được cập nhật.", "success");
+                        dongPhanQuyen();
+                    } else {
+                        Swal.fire("Thất bại!", "Có lỗi xảy ra khi lưu phân quyền.", "error");
+                    }
+                })
+                .fail(function () {
+                    btn.prop('disabled', false).text("Lưu");
+                    Swal.fire("Lỗi mạng!", "Không thể kết nối đến máy chủ.", "error");
+                });
+        }
+
+    </script>
+}

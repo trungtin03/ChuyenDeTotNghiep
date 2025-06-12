@@ -1,0 +1,466 @@
+﻿@model List<CDTN.Models.ViewModels.ThongKeViewModel>
+@{
+    ViewBag.Title = "Thống kê quản trị";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var khoHang = ViewBag.KhoHang as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var tongSoLuongKho = ViewBag.TongSoLuongKho ?? 0;
+    var doanhThuTungThang = ViewBag.DoanhThuTungThang as IEnumerable<decimal> ?? Enumerable.Repeat(0M, 12);
+    var selectedYear = ViewBag.SelectedYear ?? DateTime.Now.Year;
+    var activeTab = ViewBag.ActiveTab as string ?? "tab1";
+    var danhMucList = ViewBag.DanhMucList as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>());
+
+}
+
+@section Styles {
+    <link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .tab-button {
+            margin-right: 10px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            background: #e0e7ff;
+            color: #4338ca;
+            cursor: pointer;
+        }
+
+            .tab-button.active, .tab-button:hover {
+                background: #4338ca;
+                color: white;
+            }
+
+        .filter select, .filter input, .filter button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+            .card h2 {
+                color: #6b7280;
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            .card p {
+                font-size: 24px;
+                font-weight: 700;
+                color: #111827;
+            }
+
+        .swiper-container {
+            margin-top: 16px;
+        }
+
+        .swiper-slide {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 20px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 240px !important;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        table img {
+            width: 48px;
+            border-radius: 8px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+        #chartPopup {
+            display: none; /* Ẩn ban đầu */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chartPopupContent {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 720px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+
+    </style>
+}
+
+<header class="mb-4">
+    <h1>📊 Thống kê quản trị</h1>
+    <nav>
+        <button class="tab-button @(activeTab == "tab1" ? "active" : "")" onclick="switchTab('tab1', this)">Tổng quát</button>
+        <button class="tab-button @(activeTab == "tab2" ? "active" : "")" onclick="switchTab('tab2', this)">Kho hàng</button>
+    </nav>
+</header>
+
+<section id="tab1" class="tab-content active">
+    <!-- Bộ lọc và nút vẽ biểu đồ -->
+    <div class="filter mb-4">
+        <form method="get" class="d-flex align-items-end gap-3 flex-wrap">
+            <input type="hidden" name="tab" value="tab1" />
+
+            <div style="margin-right:15px">
+                <label class="form-label mb-1">Từ ngày:</label>
+                <input type="date" name="fromDate" value="@ViewBag.FromDate" class="form-control" style="min-width: 160px;" />
+            </div>
+
+            <div style="margin-right:15px">
+                <label class="form-label mb-1">Đến ngày:</label>
+                <input type="date" name="toDate" value="@ViewBag.ToDate" class="form-control" style="min-width: 160px;" />
+            </div>
+
+            <div class="pt-1">
+                <button type="submit" class="btn btn-primary me-2">Lọc</button>
+                <button type="button" class="btn btn-outline-success" onclick="openChartPopup()">📈 Vẽ biểu đồ</button>
+                <a href="@Url.Action("ExportDoanhSoExcel", "ThongKe", new { area = "Admin", from = ViewBag.FromDate, to = ViewBag.ToDate })" class="btn btn-outline-success ms-2">
+                    📥 Xuất Excel 
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Popup vẽ biểu đồ -->
+    <div id="chartPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#00000070; z-index:9999;">
+        <div id="chartPopupContent" style="background:white; width:90%; max-width:800px; margin:5% auto; padding:30px; border-radius:16px; position:relative;">
+            <h4 class="mb-3">📊 Vẽ biểu đồ doanh thu</h4>
+            <div class="d-flex gap-3 mb-3">
+                <input type="date" id="chartFrom" class="form-control" />
+                <input type="date" id="chartTo" class="form-control" />
+                <button class="btn btn-primary" onclick="drawChartRange()">Vẽ</button>
+            </div>
+            <canvas id="revenueChart" width="600" height="300"></canvas>
+            <div class="text-end mt-4">
+                <button class="btn btn-outline-danger" onclick="exportChartPDF()">📄 Xuất PDF</button>
+                <button class="btn btn-secondary ms-2" onclick="closeChartPopup()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tổng quan -->
+    <div class="stats mb-4">
+        <div class="card">
+            <h2>Doanh thu</h2>
+            <p>@((ViewBag.DoanhThu as decimal? ?? 0).ToString("N0")) ₫</p>
+        </div>
+        <div class="card">
+            <h2>Đơn hàng</h2>
+            <p>@ViewBag.SoDon</p>
+        </div>
+    </div>
+
+    <!-- Danh sách đơn hàng -->
+    <h2 class="mb-3">📅 Danh sách đơn hàng từ @ViewBag.FromDate đến @ViewBag.ToDate</h2>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Ngày đặt</th>
+                <th>Mã đơn hàng</th>
+                <th>Khách hàng</th>
+                <th class="text-end">Tổng tiền</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var donHangs = ViewBag.DonHangTheoNgay as List<CDTN.Models.ViewModels.DonHangViewModel>;
+            }
+            @if (donHangs != null && donHangs.Any())
+            {
+                foreach (var don in donHangs)
+                {
+                    <tr>
+                        <td>@don.NgayDat.ToString("dd/MM/yyyy")</td>
+                        <td>#@don.MaDonHang</td>
+                        <td>@don.TenKhachHang</td>
+                        <td class="text-end">@string.Format("{0:N0} ₫", don.TongTien)</td>
+                        <td><span class="badge bg-success">@don.TrangThai</span></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Không có đơn hàng nào trong khoảng thời gian đã chọn.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+<section id="tab2" class="tab-content @(ViewBag.ActiveTab == "tab2" ? "active" : "")">
+    <div id="thongKeKho" style="position: relative; padding-top: 2rem;">
+        <h2>📦 Thống kê kho hàng</h2>
+        <button id="btnToLichSu" class="btn btn-outline-primary btn-sm"
+                style="position: absolute; top: 0; right: 0; z-index: 10;">
+            ⬇️ Xem lịch sử nhập kho
+        </button>
+
+        <div class="filter mb-3">
+            <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
+                <input type="hidden" name="tab" value="tab2" />
+                <input type="hidden" name="year" value="@ViewBag.SelectedYear" />
+
+                <label class="mb-0">Danh mục:</label>
+                @Html.DropDownList("categoryId", ViewBag.DanhMucList as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()), "-- Tất cả --",
+                    new { @class = "form-control", style = "width: 180px;" })
+
+                <label class="mb-0 ms-2">Từ khóa:</label>
+                <input type="text" name="keyword" value="@ViewBag.Keyword" placeholder="Tên sản phẩm..." class="form-control" style="width: 200px;" />
+
+                <button type="submit" class="btn btn-primary ms-2">Lọc</button>
+            </form>
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Màu</th>
+                    <th>Size</th>
+                    <th class="text-center">Tổng nhập</th>
+                    <th class="text-center">Tổng bán</th>
+                    <th class="text-center">Tồn kho</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.TenSanPham</td>
+                        <td>@item.Mau</td>
+                        <td>@item.Size</td>
+                        <td class="text-center">@item.TongNhap</td>
+                        <td class="text-center">@item.TongBan</td>
+                        <td class="text-center">@item.TonKho</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div id="lichSuNhapKho" style="position: relative; padding-top: 2rem;" class="mt-5">
+        <h4>🕓 Lịch sử nhập kho</h4>
+        <button id="btnToThongKe" class="btn btn-outline-primary btn-sm"
+                style="position: absolute; top: 0; right: 0; z-index: 10;">
+            ⬆️ Quay lại thống kê kho
+        </button>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Ngày nhập</th>
+                    <th>Sản phẩm</th>
+                    <th>Size</th>
+                    <th>Màu</th>
+                    <th class="text-center">Số lượng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.LichSuNhapKho as IEnumerable<CDTN.Models.ViewModels.LichSuNhapKhoViewModel>)
+                {
+                    <tr>
+                        <td>@item.NgayNhap.ToString("dd/MM/yyyy")</td>
+                        <td>@item.TenSanPham</td>
+                        <td>@item.TenSize</td>
+                        <td>@item.TenMau</td>
+                        <td class="text-center">@item.SoLuongNhap</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        const btnToLichSu = document.getElementById("btnToLichSu");
+        const btnToThongKe = document.getElementById("btnToThongKe");
+
+        const thongKeEl = document.getElementById("thongKeKho");
+        const lichSuEl = document.getElementById("lichSuNhapKho");
+
+        btnToLichSu?.addEventListener("click", () => {
+            lichSuEl?.scrollIntoView({ behavior: "smooth" });
+        });
+
+        btnToThongKe?.addEventListener("click", () => {
+            thongKeEl?.scrollIntoView({ behavior: "smooth" });
+        });
+    </script>
+    <script>
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get("tab");
+        if (activeTab) {
+            const btn = document.querySelector(`.tab-button[onclick*="${activeTab}"]`);
+            if (btn) switchTab(activeTab, btn);
+        }
+
+        const data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.DoanhThuTungThang));
+        for (let i = 1; i <= 12; i++) {
+            const ctx = document.getElementById("chartMonth" + i);
+            if (!ctx) continue;
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [`Tháng ${i}`],
+                    datasets: [{
+                        data: [data[i - 1]],
+                        backgroundColor: '#6366f1',
+                        borderRadius: 6
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: false,
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev'
+            }
+        });
+    </script>
+    <script>
+        function openChartPopup() {
+            document.getElementById('chartPopup').style.display = 'block';
+        }
+        function closeChartPopup() {
+            document.getElementById('chartPopup').style.display = 'none';
+        }
+        function drawChartRange() {
+            const from = document.getElementById('chartFrom').value;
+            const to = document.getElementById('chartTo').value;
+
+            if (!from || !to) {
+                alert('Vui lòng chọn cả 2 mốc thời gian');
+                return;
+            }
+
+            fetch(`/Admin/ThongKe/ChartData?from=${from}&to=${to}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+
+                    const canvas = document.getElementById("revenueChart");
+                    const ctx = canvas.getContext("2d");
+                    if (window.revenueChart && typeof window.revenueChart.destroy === 'function') {
+                        window.revenueChart.destroy();
+                    }
+
+                    window.revenueChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: "Doanh thu",
+                                data: data.values,
+                                borderColor: "#10b981",
+                                fill: false,
+                                tension: 0.2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: true } },
+                            scales: { y: { beginAtZero: true } }
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.error("Lỗi khi gọi biểu đồ:", err);
+                    alert("Không thể vẽ biểu đồ. Xem console để biết chi tiết.");
+                });
+        }
+
+        function exportChartPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const canvas = document.getElementById("revenueChart");
+            const imgData = canvas.toDataURL("image/png");
+            doc.addImage(imgData, "PNG", 10, 10, 180, 100);
+            doc.save("doanhthu_chart.pdf");
+        }
+    </script>
+}

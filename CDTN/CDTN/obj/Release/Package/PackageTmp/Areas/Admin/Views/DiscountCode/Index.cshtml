@@ -1,0 +1,80 @@
+﻿@model IEnumerable<CDTN.Models.DiscountCode>
+
+@{
+    ViewBag.Title = "Danh sách mã giảm giá";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">
+        <span class="me-2">🎟️</span> Danh sách Mã giảm giá
+    </h3>
+    <a href="@Url.Action("Create", "DiscountCode", new { area = "Admin" })" class="btn btn-success">
+        <i class="fas fa-plus-circle me-1"></i> Thêm mã mới
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> Chưa có mã giảm giá nào.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center shadow-sm">
+            <thead style="background-color: #1e293b; color: white;">
+                <tr>
+                    <th>MÃ</th>
+                    <th>GIÁ TRỊ</th>
+                    <th>LOẠI</th>
+                    <th>SẢN PHẨM ÁP DỤNG</th>
+                    <th>HIỆU LỰC</th>
+                    <th>TRẠNG THÁI</th>
+                    <th>THAO TÁC</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.Code</strong></td>
+                        <td>
+                            @(item.IsPercentage ? item.DiscountAmount + " %" : item.DiscountAmount.ToString("N0") + " VNĐ")
+                        </td>
+                        <td>
+                            @(item.Type == CDTN.Models.DiscountType.OrderTotal ? "Toàn hóa đơn" : "Sản phẩm cụ thể")
+                        </td>
+                        <td>
+                            @(item.Product?.TenSP ?? "–")
+                        </td>
+                        <td>
+                            @item.StartDate.ToString("dd/MM/yyyy") → @item.EndDate.ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success">Đang hiệu lực</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Không sử dụng</span>
+                            }
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit", "DiscountCode", new { id = item.Id, area = "Admin" })"
+                               class="btn btn-sm btn-warning me-1">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                            <a href="@Url.Action("Delete", "DiscountCode", new { id = item.Id, area = "Admin" })"
+                               class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i> Xoá
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

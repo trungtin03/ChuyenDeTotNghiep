@@ -1,0 +1,283 @@
+﻿@model CDTN.Models.SanPham
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    var spcts = ViewBag.SPCT as List<CDTN.Models.SanPhamChiTiet>;
+    var exists = ViewBag.Exitst as CDTN.Models.SanPhamChiTiet;
+    var allSizes = ViewBag.AllSizes as List<CDTN.Models.KichCo>;
+
+}
+<style>
+    .kichco-btn.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+
+    .review-section {
+        background-color: #fdfdfd;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 25px;
+        margin-top: 50px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+        .review-section h4 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+    .review-box {
+        background: #fff;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+    }
+
+        .review-box strong {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .review-box .text-warning {
+            font-size: 16px;
+            margin: 4px 0;
+        }
+
+    .review-note {
+        font-style: italic;
+        font-size: 14px;
+        color: #999;
+    }
+</style>
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-area mt-30">
+    <div class="container">
+        <div class="breadcrumb">
+            <ul class="d-flex align-items-center">
+                <li>@Html.ActionLink("Trang chủ", "Index", "Home")</li>
+                <li>@Html.ActionLink("Cửa hàng", "Shop", "Product")</li>
+                <li class="active">@Model.TenSP</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- Product Thumbnail Start -->
+<div class="main-product-thumbnail ptb-100 ptb-sm-60">
+    <div class="container">
+        <div class="thumb-bg">
+            <div class="row">
+                <!-- Hình ảnh sản phẩm -->
+                <div class="col-lg-5 mb-all-40">
+                    <div class="tab-content">
+                        <div id="thumb1" class="tab-pane fade show active">
+                            <a data-fancybox="images" href="@Url.Content(Model.HinhAnh)">
+                                <img src="@Url.Content(Model.HinhAnh)" alt="product-view" onerror="this.src='/Content/images/noimage.jpg'" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Thông tin sản phẩm -->
+                <div class="col-lg-7">
+                    <div class="thubnail-desc fix">
+                        <h3 class="product-header">@Model.TenSP</h3>
+                    </div>
+                    <div class="pro-price mtb-30">
+                        <p class="d-flex align-items-center">
+                            <span class="price">@string.Format(info, "{0:c0}", Model.Gia)</span>
+                        </p>
+                    </div>
+                    <p style="font-size: 1.2em; color: #666;">Mô tả:</p>
+                    <p class="mb-20 pro-desc-details">@Model.MoTa</p>
+
+                    <div class="product-size mb-20 clearfix">
+                        <label>Kích cỡ</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var size in allSizes)
+                            {
+                                // Lấy bản ghi đầu tiên có kích cỡ này
+                                var firstMatch = spcts.FirstOrDefault(x => x.KichCo.TenKichCo == size.TenKichCo);
+                                var mamau = firstMatch?.MaMau ?? 0;
+                                var idctsp = firstMatch?.IDCTSP ?? 0;
+                                var soluong = firstMatch?.SoLuong ?? 0;
+
+                                <label class="btn btn-outline-dark m-1 kichco-btn"
+                                       data-kichco="@size.TenKichCo"
+                                       data-mamau="@mamau"
+                                       data-idctsp="@idctsp"
+                                       data-soluong="@soluong">
+                                    <input type="radio" name="kichco" value="@idctsp" class="d-none" />
+                                    @size.TenKichCo
+                                </label>
+                            }
+                        </div>
+                    </div>
+
+
+                    <div class="color clearfix mb-20">
+                        <label>Chọn màu</label>
+                        <div id="chon-mau" class="d-flex flex-wrap gap-2">
+                            @if (ViewBag.MauSacs != null && ViewBag.MauSacs.Count > 0)
+                            {
+                                foreach (var mau in ViewBag.MauSacs)
+                                {
+                                    <label class="btn btn-outline-dark m-1 mausac-btn">
+                                        <input type="radio" name="mau" value="@mau.MaMau" class="d-none" />
+                                        @mau.TenMau
+                                    </label>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-danger">Không có màu nào!</p>
+                            }
+                        </div>
+                    </div>
+                    <label>Số lượng</label>
+                    <div class="box-quantity d-flex hot-product2 mb-3">
+                        <input class="quantity mr-15 form-control" id="modal-soluong" type="number" min="1" value="1" style="width: 100px;" />
+                    </div>
+                    <!-- Thêm vào giỏ hàng (luôn render, nhưng ẩn ban đầu) -->
+                    <div class="pro-actions">
+                        <button id="order-text" type="button" onclick="themVaoGioHang()" class="btn btn-success">Thêm vào giỏ hàng</button>
+                        <button type="button" class="btn btn-warning ml-2" onclick="muaNgay()">Mua ngay</button>
+                    </div>
+                    <!-- Vùng thao tác mua hàng -->
+                    <div class="mt-3" id="product-actions">
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-success px-4 py-2" id="btn-add-to-cart">
+                                <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ hàng
+                            </button>
+
+                            <button type="button" class="btn btn-warning text-white px-4 py-2" id="btn-buy-now">
+                                <i class="fa fa-credit-card me-1"></i> Mua ngay
+                            </button>
+                        </div>
+
+                        <!-- Thông báo lỗi chọn thiếu hoặc hết hàng -->
+                        <div id="product-error-message" class="text-danger mt-2" style="display:none;"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Tabs -->
+<div class="thumnail-desc pb-100 pb-sm-60">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="main-thumb-desc nav tabs-area" role="tablist">
+                    <li><a class="active" data-toggle="tab" href="#dtail">Hướng dẫn sử dụng</a></li>
+                    <li><a data-toggle="tab" href="#review">Chất liệu</a></li>
+                </ul>
+                <div class="tab-content thumb-content border-default">
+                    <div id="dtail" class="tab-pane fade show active">
+                        <p>@Model.HuongDan</p>
+                    </div>
+                    <div id="review" class="tab-pane fade">
+                        <p>@Model.ChatLieu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using CDTN.Models.ViewModels
+
+<div class="review-section mt-5" id="review-section">
+    <h4><i class="fa fa-comments text-warning"></i> Đánh giá sản phẩm</h4>
+    @if (TempData["ReviewSuccess"] != null)
+    {
+        <div class="alert alert-success">@TempData["ReviewSuccess"]</div>
+    }
+    @if (TempData["ReviewError"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ReviewError"]</div>
+    }
+
+    @{
+        var danhGiaList = ViewBag.DanhGiaList as List<CDTN.Models.DanhGia>;
+        double diemTrungBinh = danhGiaList != null && danhGiaList.Count > 0
+            ? Math.Round(danhGiaList.Average(x => x.SoSao), 1)
+            : 0;
+    }
+
+    @if (danhGiaList != null && danhGiaList.Count > 0)
+    {
+        <p><strong>⭐ @diemTrungBinh/5</strong> từ @danhGiaList.Count đánh giá</p>
+        foreach (var dg in danhGiaList)
+        {
+            <div class="border p-3 mb-3 rounded">
+                <strong>@dg.TaiKhoan.HoTen</strong>
+                <span class="text-muted">– @dg.NgayDanhGia.ToString("dd/MM/yyyy")</span>
+                <div class="text-warning">@Html.Raw(new string('★', dg.SoSao))@Html.Raw(new string('☆', 5 - dg.SoSao))</div>
+                <p>@dg.BinhLuan</p>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+    }
+
+    @{
+        var user = Session[CDTN.Session.ConstaintUser.USER_SESSION];
+        bool daMua = ViewBag.DaMua == true;
+    }
+
+    @if (user != null && daMua)
+    {
+        <hr />
+        <h5 class="mb-3">Gửi đánh giá của bạn</h5>
+        <form action="@Url.Action("AddReview", "Product")" method="post">
+            @Html.AntiForgeryToken()
+            @Html.Hidden("MaSP", Model.MaSP)
+
+            <div class="form-group">
+                <label for="SoSao">Số sao</label>
+                <select name="SoSao" class="form-control w-25" required>
+                    <option value="5">5 sao</option>
+                    <option value="4">4 sao</option>
+                    <option value="3">3 sao</option>
+                    <option value="2">2 sao</option>
+                    <option value="1">1 sao</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="BinhLuan">Bình luận</label>
+                <textarea name="BinhLuan" class="form-control" rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-2">Gửi đánh giá</button>
+        </form>
+    }
+
+
+
+    else if (user != null && !daMua)
+    {
+        <p class="text-warning">* Bạn cần mua sản phẩm này để có thể đánh giá.</p>
+    }
+    else
+    {
+        <p class="text-muted">* Vui lòng <a href="@Url.Action("Login", "Home")">đăng nhập</a> để đánh giá sản phẩm.</p>
+    }
+</div>
+@section Script {
+    <script src="~/Assets/Client/js/common.js?v=2"></script>
+    <script>
+        const spcts = @Html.Raw(ViewBag.SPCT_JSON);
+    </script>
+}

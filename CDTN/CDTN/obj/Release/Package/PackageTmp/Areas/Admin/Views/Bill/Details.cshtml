@@ -1,0 +1,111 @@
+﻿@model CDTN.Models.HoaDon
+@{
+    ViewBag.Title = "Chi tiết hóa đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h3 class="mb-4">Chi tiết Hóa đơn @Model.MaHD </h3>
+
+<div class="row mb-4">
+    <div class="col-md-6">       
+        <p><strong>📦 Người nhận:</strong> @Model.HoTenNguoiNhan</p>
+        <p><strong>📞 SĐT:</strong> @Model.SoDienThoaiNhan</p>
+        <p><strong>📍 Địa chỉ:</strong> @Model.DiaChiNhan</p>
+        <p><strong>📝 Ghi chú:</strong> @(string.IsNullOrEmpty(Model.GhiChu) ? "(Không có)" : Model.GhiChu)</p>
+    </div>
+    <div class="col-md-6">
+        <p><strong>📅 Ngày đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+        <p>
+            <strong>📌 Trạng thái:</strong>
+            @{
+                var tt = "Chưa rõ";
+                switch (Model.TrangThai)
+                {
+                    case 0: tt = "Đã hủy"; break;
+                    case 1: tt = "Đang chuẩn bị"; break;
+                    case 2: tt = "Đang giao"; break;
+                    case 3: tt = "Đã thanh toán"; break;
+                }
+            }
+            <span class="badge badge-info">@tt</span>
+        </p>
+        <p><strong>👨‍🔧 Người sửa:</strong> @(string.IsNullOrEmpty(Model.NguoiSua) ? "(Chưa cập nhật)" : Model.NguoiSua)</p>
+        <p><strong>📆 Ngày sửa:</strong> @(Model.NgaySua.HasValue ? Model.NgaySua.Value.ToString("dd/MM/yyyy HH:mm") : "(Chưa cập nhật)")</p>
+    </div>
+</div>
+
+<h5 class="mb-3">🛒 Danh sách sản phẩm đã mua</h5>
+
+@if (Model.ChiTietHoaDon != null && Model.ChiTietHoaDon.Any())
+{
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th class="text-center">Tên sản phẩm</th>
+                <th class="text-center">Kích cỡ</th>
+                <th class="text-center">Số lượng</th>
+                <th class="text-center">Đơn giá (VNĐ)</th>
+                <th class="text-center">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                decimal tongTien = 0;
+                foreach (var ct in Model.ChiTietHoaDon)
+                {
+                    var tenSP = ct.SanPhamChiTiet?.SanPham?.TenSP ?? "[Không xác định]";
+                    var kichCo = ct.SanPhamChiTiet?.KichCo?.TenKichCo ?? "-";
+                    var soLuong = ct.SoLuongMua;
+                    var gia = ct.GiaMua;
+                    var thanhTien = soLuong * gia;
+                    tongTien += thanhTien;
+
+                    <tr>
+                        <td>@tenSP</td>
+                        <td class="text-center">@kichCo</td>
+                        <td class="text-center">@soLuong</td>
+                        <td class="text-right">@gia.ToString("N0") VNĐ</td>
+                        <td class="text-right">@thanhTien.ToString("N0") VNĐ</td>
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot>
+            @if (!string.IsNullOrEmpty(Model.DiscountCodeUsed))
+            {
+                <tr>
+                    <td colspan="4" class="text-right"><strong>Mã giảm giá:</strong></td>
+                    <td class="text-right text-primary">@Model.DiscountCodeUsed</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right"><strong>Giảm giá:</strong></td>
+                    <td class="text-right text-success">
+                        -@(@Model.DiscountAmount?.ToString("N0")) VNĐ
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="4" class="text-right"><strong>Tổng cộng:</strong></td>
+                <td class="text-right text-danger">
+                    <strong>
+                        @{
+                            var tongSauGiam = Model.DiscountAmount.HasValue ? tongTien - Model.DiscountAmount.Value : tongTien;
+                            @tongSauGiam.ToString("N0")
+                        } VNĐ
+                    </strong>
+                </td>
+            </tr>
+        </tfoot>
+
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">
+        Không có sản phẩm nào trong hóa đơn này.
+    </div>
+}
+
+<a href="@Url.Action("Index", "Bill")" class="btn btn-secondary mt-3">
+    ← Quay lại danh sách hóa đơn
+</a>

@@ -1,0 +1,135 @@
+﻿@model List<CDTN.Models.SanPhamChiTiet>
+@{
+    ViewBag.Title = "Đặt hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    decimal tongtien = 0;
+}
+
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-area mt-30">
+    <div class="container">
+        <div class="breadcrumb">
+            <ul class="d-flex align-items-center">
+                <li>@Html.ActionLink("Trang chủ", "Index", "Home")</li>
+                <li class="active">@Html.ActionLink("Đặt hàng", "CheckOut", "Cart")</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<div class="checkout-area pb-100 pt-15 pb-sm-60">
+    <div class="container">
+        <div class="row">
+            <!-- Bên trái: Thông tin nhận hàng -->
+            <div class="col-lg-6 col-md-6">
+                <form id="add-bill-form" onsubmit="return datHang()">
+                    <div class="checkbox-form mb-sm-40">
+                        <h3>Thông tin nhận hàng</h3>
+                        <input type="hidden" name="MaTK" value="@ViewBag.TaiKhoan.MaTK" />
+
+                        <div class="checkout-form-list mb-30">
+                            <label>Họ tên</label>
+                            <input type="text" required name="HoTenNguoiNhan" placeholder="Họ tên người nhận" value="@ViewBag.TaiKhoan.HoTen" />
+                        </div>
+                        <div class="checkout-form-list mb-30">
+                            <label>Số điện thoại</label>
+                            <input type="text" required name="SoDienThoaiNhan" placeholder="Số điện thoại người nhận" value="@ViewBag.TaiKhoan.SoDienThoai" />
+                        </div>
+                        <div class="checkout-form-list mb-30">
+                            <label>Địa chỉ</label>
+                            <input type="text" required name="DiaChiNhan" placeholder="Địa chỉ người nhận" value="@ViewBag.TaiKhoan.DiaChi" />
+                        </div>
+                        <div class="checkout-form-list">
+                            <label>Ghi chú</label>
+                            <textarea name="GhiChu" rows="5" placeholder="Ghi chú cho đơn hàng"></textarea>
+                        </div>
+
+                        <!-- Hidden để lưu mã giảm giá -->
+                        <input type="hidden" name="DiscountAmount" id="discount-amount-hidden" />
+                        <input type="hidden" name="DiscountCodeUsed" id="discount-code-hidden" />
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bên phải: Đơn hàng -->
+            <div class="col-lg-6 col-md-6">
+                <div class="your-order">
+                    <h3>Đơn hàng của bạn</h3>
+                    <div class="your-order-table table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var thanhTien = item.ChiTietHoaDon.First().GiaMua * item.ChiTietHoaDon.First().SoLuongMua;
+                                    tongtien += thanhTien;
+
+                                    <tr class="cart_item">
+                                        <td class="product-name">
+                                            <b>@item.SanPham.TenSP</b><br />
+                                            <span>Kích cỡ: @item.KichCo.TenKichCo</span><br />
+                                            <span>
+                                                Màu:
+                                                <span style="display: inline-block; width: 15px; height: 15px; background-color: @item.SanPham.HinhAnh; border: 1px solid #ccc;"></span>
+                                                @item.SanPham.ChatLieu
+                                            </span><br />
+                                            <span class="product-quantity">Số lượng: @item.ChiTietHoaDon.First().SoLuongMua</span>
+                                        </td>
+                                        <td class="product-total">
+                                            <span class="amount">@string.Format(info, "{0:c0}", thanhTien)</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="input-group mt-2">
+                                            <input type="text" id="discount-code-input" class="form-control" placeholder="Nhập mã giảm giá" />
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-primary" onclick="kiemTraMaGiamGia()">Áp dụng</button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="DiscountAmount" id="discount-amount-hidden" />
+                                        <input type="hidden" name="DiscountCodeUsed" id="discount-code-hidden" />
+                                        <small id="discount-message" class="text-info mt-1 d-block"></small>
+                                    </td>
+                                </tr>
+                                <tr id="discount-row" style="display: none;">
+                                    <th>Giảm giá</th>
+                                    <td><span id="discount-amount-view" class="text-success"></span></td>
+                                </tr>
+                                <tr class="order-total">
+                                    <th>Tổng đơn hàng</th>
+                                    <td>
+                                        <span class="total amount fw-bold text-danger" id="tong-don-hang">
+                                            @string.Format(info, "{0:c0}", tongtien)
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p id="add-message"></p>
+
+        <div class="float-md-right mt-3">
+            <input type="submit" value="Đặt hàng" form="add-bill-form" class="return-customer-btn">
+        </div>
+    </div>
+</div>
+
+@section Script {
+    <script src="~/Assets/Client/js/common.js"></script>
+}

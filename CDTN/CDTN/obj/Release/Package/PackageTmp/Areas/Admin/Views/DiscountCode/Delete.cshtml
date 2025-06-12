@@ -1,0 +1,25 @@
+﻿@model CDTN.Models.DiscountCode
+
+@{
+    ViewBag.Title = "Xóa mã giảm giá";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h3 class="mb-4 text-danger">🗑️ Xóa Mã: @Model.Code</h3>
+
+<div class="alert alert-warning">
+    Bạn có chắc chắn muốn xóa mã <strong>@Model.Code</strong> này không?
+</div>
+
+<div class="mb-3">
+    <p><strong>Giá trị:</strong> @(Model.IsPercentage ? Model.DiscountAmount + "%" : Model.DiscountAmount.ToString("N0") + " VNĐ")</p>
+    <p><strong>Loại:</strong> @(Model.Type == CDTN.Models.DiscountType.OrderTotal ? "Toàn hóa đơn" : "Theo sản phẩm")</p>
+    <p><strong>Sản phẩm:</strong> @(Model.Product?.TenSP ?? "–")</p>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <input type="submit" value="🗑️ Xóa" class="btn btn-danger" />
+    @Html.ActionLink("Hủy", "Index", null, new { @class = "btn btn-secondary ml-2" })
+}

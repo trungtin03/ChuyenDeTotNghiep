@@ -1,0 +1,181 @@
+﻿@{
+    ViewBag.Title = "Hướng Dẫn Chọn Size";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="mb-3 breadcrumb bg-light p-2 rounded">
+                <a href="/" class="text-dark text-decoration-none">Trang chủ</a>
+                <span class="mx-1">/</span>
+                <span class="text-danger">Hướng Dẫn Chọn Size</span>
+            </div>
+
+            <div class="list-group shadow-sm rounded">
+                <a href="@Url.Action("Contact", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-phone me-2"></i> Liên hệ
+                </a>
+                <a href="@Url.Action("BuyGuide", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-shopping-cart me-2"></i> Hướng dẫn mua hàng
+                </a>
+                <a href="@Url.Action("SizeGuide", "Support")" class="list-group-item list-group-item-action active">
+                    <i class="fa fa-ruler me-2"></i> Hướng dẫn chọn size
+                </a>
+                <a href="@Url.Action("Policy", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-file-contract me-2"></i> Điều khoản & Chính sách
+                </a>
+                <a href="@Url.Action("Faq", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-question-circle me-2"></i> Câu hỏi thường gặp
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="p-4 bg-white shadow-sm rounded">
+                <h3 class="fw-bold text-primary mb-4">Hướng Dẫn Chọn Size</h3>
+
+                <ul class="nav nav-tabs mb-4" id="sizeTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="male-tab" data-bs-toggle="tab" data-bs-target="#male" type="button" role="tab">Thời trang Nam</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="female-tab" data-bs-toggle="tab" data-bs-target="#female" type="button" role="tab">Thời trang Nữ</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="sizeTabContent">
+                    <!-- Nam -->
+                    <div class="tab-pane fade show active" id="male" role="tabpanel">
+                        <h5 class="fw-bold mt-3">Bảng thông số chung</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Size</th>
+                                    <th>M</th>
+                                    <th>L</th>
+                                    <th>XL</th>
+                                    <th>2XL</th>
+                                    <th>3XL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Chiều cao (cm)</td><td>&lt;165</td><td>165 - 170</td><td>168 - 173</td><td>170 - 176</td><td>170 - 176</td></tr>
+                                <tr><td>Cân nặng (kg)</td><td>60</td><td>60 - 64</td><td>64 - 69</td><td>68 - 72</td><td>70 - 74</td></tr>
+                                <tr><td>Vòng ngực</td><td>86 - 90</td><td>90 - 94</td><td>94 - 98</td><td>98 - 102</td><td>102 - 104</td></tr>
+                                <tr><td>Vòng eo</td><td>68 - 72</td><td>72 - 76</td><td>76-80</td><td>80 - 84</td><td>84 - 86</td></tr>
+                                <tr><td>Vòng mông</td><td>88 - 92</td><td>92 - 96</td><td>96 - 100</td><td>100 - 104</td><td>104 - 108</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h5 class="fw-bold mt-4">Áo Polo</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr><th>Size</th><th>M</th><th>L</th><th>XL</th><th>2XL</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Chiều cao (cm)</td><td>&lt;160</td><td>160-167</td><td>167-175</td><td>175 - 178</td></tr>
+                                <tr><td>Cân nặng (kg)</td><td>&lt;60</td><td>60 - 65</td><td>65 - 70</td><td>70 - 72</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h5 class="fw-bold mt-4">Quần Kaiki</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr><th>Size</th><th>29</th><th>30</th><th>31</th><th>32</th><th>33</th><th>34</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Rộng cạp (cm)</td><td>37</td><td>39</td><td>41</td><td>43</td><td>45</td><td>47</td></tr>
+                                <tr><td>Dài quần (cm)</td><td>94</td><td>96</td><td>98</td><td>100</td><td>102</td><td>104</td></tr>
+                                <tr><td>Rộng mông (cm)</td><td>44</td><td>46</td><td>48</td><td>50</td><td>52</td><td>54</td></tr>
+                                <tr><td>Rộng đùi (cm)</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td>33</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Nữ -->
+                    <div class="tab-pane fade" id="female" role="tabpanel">
+                        <h5 class="fw-bold mt-3">Bảng thông số chung</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr><th>Size</th><th>S</th><th>M</th><th>L</th><th>XL</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Cân nặng (kg)</td><td>40 - 47</td><td>48 - 53</td><td>54 - 57</td><td>57 - 62</td></tr>
+                                <tr><td>Vòng ngực (cm)</td><td>80 - 83</td><td>84 - 87</td><td>87 - 90</td><td>90 - 92</td></tr>
+                                <tr><td>Vòng eo (cm)</td><td>64 - 68</td><td>68 - 72</td><td>72 - 75</td><td>76 - 78</td></tr>
+                                <tr><td>Vòng mông (cm)</td><td>80 - 86</td><td>87 - 92</td><td>93 - 95</td><td>95 - 97</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h5 class="fw-bold mt-4">Váy Đầm</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr><th>Size</th><th>S</th><th>M</th><th>L</th><th>XL</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Vai (cm)</td><td>36.5</td><td>38</td><td>39</td><td>40</td></tr>
+                                <tr><td>Eo (cm)</td><td>66</td><td>70</td><td>74</td><td>78</td></tr>
+                                <tr><td>Vòng ngực (cm)</td><td>84</td><td>88</td><td>92</td><td>96</td></tr>
+                                <tr><td>Vòng mông (cm)</td><td>92</td><td>96</td><td>98</td><td>100</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h5 class="fw-bold mt-4">Quần Tây</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr><th>Size</th><th>S</th><th>M</th><th>L</th><th>XL</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Lưng (cm)</td><td>64 - 68</td><td>68 - 72</td><td>72 - 76</td><td>76 - 78</td></tr>
+                                <tr><td>Vòng mông (cm)</td><td>68 - 90</td><td>90 - 94</td><td>94 - 98</td><td>98 - 102</td></tr>
+                                <tr><td>Rộng ống (cm)</td><td>14</td><td>14.5</td><td>15</td><td>15.5</td></tr>
+                                <tr><td>Chiều dài (cm)</td><td>90.5</td><td>92.5</td><td>94.5</td><td>95.5</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h5 class="fw-bold mt-4">Áo</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr><th>Size</th><th>S</th><th>M</th><th>L</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Vai (cm)</td><td>36.5</td><td>38</td><td>39</td></tr>
+                                <tr><td>Vòng eo (cm)</td><td>68</td><td>72</td><td>75</td></tr>
+                                <tr><td>Vòng ngực (cm)</td><td>86</td><td>90</td><td>92</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .list-group-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    .list-group-item.active {
+        background-color: #fff0e9;
+        border-color: #ffc2a6;
+        color: #d94321;
+        font-weight: bold;
+    }
+
+    .nav-tabs .nav-link {
+        font-weight: 500;
+        color: #333;
+    }
+
+        .nav-tabs .nav-link.active {
+            color: #d94321;
+            border-bottom: 3px solid #d94321;
+            background-color: transparent;
+        }
+</style>

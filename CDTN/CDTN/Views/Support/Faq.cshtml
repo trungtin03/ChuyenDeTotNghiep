@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "Câu Hỏi Thường Gặp";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="mb-3 breadcrumb bg-light p-2 rounded">
+                <a href="/" class="text-dark text-decoration-none">Trang chủ</a>
+                <span class="mx-1">/</span>
+                <span class="text-danger">Câu Hỏi Thường Gặp</span>
+            </div>
+
+            <div class="list-group shadow-sm rounded">
+                <a href="@Url.Action("Contact", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-phone me-2"></i> Liên hệ
+                </a>
+                <a href="@Url.Action("BuyGuide", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-shopping-cart me-2"></i> Hướng dẫn mua hàng
+                </a>
+                <a href="@Url.Action("SizeGuide", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-ruler me-2"></i> Hướng dẫn chọn size
+                </a>
+                <a href="@Url.Action("Policy", "Support")" class="list-group-item list-group-item-action">
+                    <i class="fa fa-file-contract me-2"></i> Điều khoản & Chính sách
+                </a>
+                <a href="@Url.Action("Faq", "Support")" class="list-group-item list-group-item-action active">
+                    <i class="fa fa-question-circle me-2"></i> Câu hỏi thường gặp
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="p-4 bg-white shadow-sm rounded">
+                <h3 class="fw-bold text-primary mb-4">Câu Hỏi Thường Gặp</h3>
+
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                1. Tôi có thể đổi trả sản phẩm trong bao lâu?
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="faq1" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Bạn có thể đổi/trả sản phẩm trong vòng <strong>07 ngày</strong> kể từ ngày mua hàng. Sản phẩm phải còn nguyên tem, nhãn và chưa qua sử dụng.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                2. Tôi có thể kiểm tra hàng trước khi thanh toán không?
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="faq2" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Có. Bạn được quyền <strong>kiểm tra hàng hóa trước khi thanh toán</strong> với đơn vị vận chuyển.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                3. Phí vận chuyển được tính như thế nào?
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="faq3" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Phí vận chuyển được tính theo khu vực giao hàng và trọng lượng đơn. Đơn hàng trên 499.000đ sẽ được <strong>miễn phí vận chuyển</strong> nội thành Đà Nẵng.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Required CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .list-group-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    .list-group-item.active {
+        background-color: #fff0e9;
+        border-color: #ffc2a6;
+        color: #d94321;
+        font-weight: bold;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #d94321;
+        background-color: #fff7f1;
+    }
+
+    .accordion-button {
+        font-weight: 500;
+    }
+</style>
